@@ -8,11 +8,11 @@ import Footer              from "./components/layout/Footer";
 import UserHomepage        from "./pages/Home/UserHomepage";
 import MessageCheckerPage  from "./pages/MessageChecker/MessageCheckerPage";
 import AnalysisResultPage  from "./pages/MessageChecker/AnalysisResultPage";
-import LaporPage           from "./pages/Lapor/LaporPage";
 import LaporSuccessPage    from "./pages/Lapor/LaporSuccessPage";
 import EdukasiPage         from "./pages/Edukasi/EdukasiPage";
 import ArticleDetailPage   from "./pages/Edukasi/ArticleDetailPage";
 import UserTicketDetailPage from "./pages/Lapor/UserTicketDetailPage"; 
+import LaporPage           from "./pages/Lapor/LaporPage";
 
 import AdminLayout         from "./pages/Admin/layout/AdminLayout";
 import AdminLoginPage      from "./pages/Admin/AdminLoginPage"; 
