@@ -17,7 +17,7 @@ const CHANNEL_OPTIONS = [
   { value: "Twitter",   label: "Twitter / X" },
   { value: "Lainnya",   label: "Lainnya" },
 ];
-
+// Komponen utama untuk form pelaporan insiden phishing
 export default function LaporForm({ onSubmit, loading = false }) {
   const [reporter_name,    setReporter_name]    = useState("");
   const [channel_chat,     setChannel_chat]     = useState("");
