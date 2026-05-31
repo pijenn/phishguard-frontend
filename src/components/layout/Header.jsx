@@ -1,10 +1,11 @@
 import { useState } from "react";
 
 const NAV_ITEMS = [
-  { key: "beranda",         label: "Beranda",         icon: "/img/vector-18.svg", aspect: "aspect-[1.1]" },
-  { key: "message-checker", label: "Message Checker", icon: "/img/vector-stroke.svg", aspect: "aspect-[1]" },
-  { key: "lapor",           label: "Lapor",           icon: "/img/vector-6.svg",  aspect: "aspect-[0.93]" },
-  { key: "edukasi",         label: "Edukasi",         icon: "/img/vector-3.svg",  aspect: "aspect-[1.4]" },
+  { key: "beranda",           label: "Beranda",           icon: "/img/vector-18.svg", aspect: "aspect-[1.1]" },
+  { key: "message-checker",   label: "Message Checker",   icon: "/img/vector-stroke.svg", aspect: "aspect-[1]" },
+  { key: "lapor",             label: "Lapor",             icon: "/img/vector-6.svg",  aspect: "aspect-[0.93]" },
+  { key: "ticket-checking",   label: "Ticket Checking",   icon: "/img/vector-stroke.svg",  aspect: "aspect-[1.2]" },
+  { key: "edukasi",           label: "Edukasi",           icon: "/img/vector-3.svg",  aspect: "aspect-[1.4]" },
 ];
 
 export default function Header({ activePage = "beranda", onNavigate }) {

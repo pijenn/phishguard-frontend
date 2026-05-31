@@ -30,9 +30,9 @@ export default function LaporPage({ onSuccess }) {
     };
 
     try {
-      await submitReport(apiPayload);
+      const response = await submitReport(apiPayload);
       if (onSuccess) {
-        onSuccess(formData);
+        onSuccess({ formData, response });
       }
     } catch (error) {
       console.error("Terjadi Kesalahan:", error);

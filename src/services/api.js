@@ -160,8 +160,13 @@ export const deleteAdminResponse = async (id) => {
 };
 
 // ================= RESPONSE =================
-export const getResponses = async () => {
-  return fetchApi(`/respons`);
+export const getResponses = async (params = {}) => {
+  const queryParams = new URLSearchParams();
+  if (params.report_id) queryParams.append("report_id", params.report_id);
+  if (params.ticket) queryParams.append("ticket", params.ticket);
+  
+  const queryString = queryParams.toString();
+  return fetchApi(`/respons${queryString ? `?${queryString}` : ""}`);
 };
 
 export const getResponseById = async (id) => {

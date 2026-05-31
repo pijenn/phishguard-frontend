@@ -8,6 +8,7 @@ import Footer              from "./components/layout/Footer";
 import UserHomepage        from "./pages/Home/UserHomepage";
 import MessageCheckerPage  from "./pages/MessageChecker/MessageCheckerPage";
 import AnalysisResultPage  from "./pages/MessageChecker/AnalysisResultPage";
+import TicketCheckingPage  from "./pages/TicketChecking/TicketCheckingPage";
 import LaporSuccessPage    from "./pages/Lapor/LaporSuccessPage";
 import EdukasiPage         from "./pages/Edukasi/EdukasiPage";
 import ArticleDetailPage   from "./pages/Edukasi/ArticleDetailPage";
@@ -94,8 +95,14 @@ export default function App() {
     handleNavigation("ticket-detail");
   };
 
-  const handleLaporSuccess = (formData) => {
-    setLaporData(formData);
+  const handleLaporSuccess = (data) => {
+    const { formData, response } = data;
+    setLaporData({
+      nama: formData.reporter_name || "Pengguna",
+      kontak: formData.region || "-",
+      ticketId: response?.ticket || "PH-XXXX",
+      timestamp: new Date(response?.ml_result?.created_at || new Date()).toLocaleDateString("id-ID", { day: 'numeric', month: 'long', year: 'numeric' })
+    });
     handleNavigation("lapor-sukses"); 
   };
 
@@ -252,6 +259,18 @@ export default function App() {
             onSubmitCheck={({ formData, backendResult }) => {
               const ml = backendResult?.ml_result || {};
               const isPhish = ml.label?.toLowerCase() === "phishing";
+              const urlAnalysis = ml.url_analysis || {};
+              
+              // Extract URL domain dan status dari url_analysis
+              let urlDomain = "-";
+              let urlStatus = "-";
+              
+              if (urlAnalysis.has_url && urlAnalysis.results && urlAnalysis.results.length > 0) {
+                // Ambil URL pertama sebagai primary
+                const firstUrl = urlAnalysis.results[0];
+                urlDomain = firstUrl.domain || "-";
+                urlStatus = firstUrl.status === "verified" ? "Terverifikasi" : "Tidak terverifikasi / mencurigakan";
+              }
               
               setAnalysisData({
                  channel: formData.channel || "-",
@@ -262,8 +281,9 @@ export default function App() {
                  verdict: isPhish ? "PENIPUAN (Phishing)" : "AMAN (Safe)",
                  isPhishing: isPhish,
                  indicators: ml.reason ? [ml.reason] : (isPhish ? ["Urgensi tinggi", "Mengarahkan ke link eksternal"] : ["Tidak ada indikasi berbahaya"]),
-                 urlDomain: formData.url ? "domain-mencurigakan.com" : "-",
-                 urlStatus: formData.url ? "Tidak terverifikasi / mencurigakan" : "-"
+                 urlDomain: urlDomain,
+                 urlStatus: urlStatus,
+                 urlAnalysis: urlAnalysis // Pass full URL analysis data untuk potential future use
               });
               handleNavigation("result");
             }}
@@ -272,7 +292,8 @@ export default function App() {
         
         {currentPage === "result"          && <AnalysisResultPage result={analysisData} onNavigate={handleNavigation} />} 
         {currentPage === "lapor"           && <LaporPage onSuccess={handleLaporSuccess} />}
-        {currentPage === "lapor-sukses"    && <LaporSuccessPage nama={laporData?.nama} kontak={laporData?.kontak} onBackToHome={() => handleNavigation("beranda")} onViewTicket={handleViewTicket} />}  
+        {currentPage === "lapor-sukses"    && <LaporSuccessPage nama={laporData?.nama} kontak={laporData?.kontak} ticketId={laporData?.ticketId} timestamp={laporData?.timestamp} onBackToHome={() => handleNavigation("beranda")} onViewTicket={handleViewTicket} />}  
+        {currentPage === "ticket-checking" && <TicketCheckingPage />}
         {currentPage === "edukasi"         && <EdukasiPage />}
         {currentPage === "artikel"         && <ArticleDetailPage onBack={() => handleNavigation("edukasi")} />}
         {currentPage === "ticket-detail"   && <UserTicketDetailPage ticketId={selectedTicketId} onBack={() => handleNavigation("beranda")} />}

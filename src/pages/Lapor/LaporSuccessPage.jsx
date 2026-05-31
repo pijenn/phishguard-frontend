@@ -2,8 +2,10 @@ import SuccessHero        from "./SuccessHero";
 import TicketHistoryTable from "./TicketHistoryTable";
 
 export default function LaporSuccessPage({
-  nama         = "Usman Iskandar",
-  kontak       = "081377894521",
+  nama         = "Pengguna",
+  kontak       = "-",
+  ticketId     = "",
+  timestamp    = "",
   tickets,
   onBackToHome,
   onViewTicket
@@ -16,6 +18,8 @@ export default function LaporSuccessPage({
       <SuccessHero 
         nama={nama} 
         kontak={kontak} 
+        ticketId={ticketId}
+        timestamp={timestamp}
         onBack={onBackToHome} 
       />
 
