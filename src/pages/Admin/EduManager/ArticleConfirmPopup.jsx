@@ -128,8 +128,8 @@ export default function ArticleConfirmPopup({ data = {}, isEdit = false, onEdit,
 
             <div className="flex flex-col gap-4 sm:gap-6 flex-1 min-w-0">
               <div className="flex flex-col gap-2">
-                <Label text="Upload Gambar" required />
-                <ReadOnlyInput value={data.gambarName} icon={ImageIcon} />
+                <Label text="URL Gambar" required />
+                <ReadOnlyInput value={data.gambar} icon={ImageIcon} />
               </div>
               <div className="flex flex-col gap-2">
                 <Label text="Alt text gambar" />

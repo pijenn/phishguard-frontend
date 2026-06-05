@@ -55,13 +55,13 @@ export default function GaugeChart({ value = 0 }) {
       >
         <defs>
           {/* Gradient hijau → kuning → oranye → merah */}
-          {/* <linearGradient id={gradId} x1="0%" y1="0%" x2="100%" y2="0%">
+          <linearGradient id={gradId} x1="0%" y1="0%" x2="100%" y2="0%">
             <stop offset="0%"   stopColor="#22c55e" />
             <stop offset="35%"  stopColor="#84cc16" />
             <stop offset="55%"  stopColor="#eab308" />
             <stop offset="75%"  stopColor="#f97316" />
             <stop offset="100%" stopColor="#b91c1c" />
-          </linearGradient> */}
+          </linearGradient>
         </defs>
 
         <path d={bgPath} fill="rgba(40,40,40,0.15)" />

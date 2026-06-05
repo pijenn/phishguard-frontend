@@ -25,16 +25,7 @@ import ArticleAdminDetailPage from "./pages/Admin/EduManager/ArticleAdminDetailP
 
 import { createArticle, updateArticle, deleteArticle } from "./services/api";
 
-// Fungsi untuk mengonversi File menjadi Base64 string
-const convertToBase64 = (file) => {
-  return new Promise((resolve, reject) => {
-    const fileReader = new FileReader();
-    fileReader.readAsDataURL(file);
-    fileReader.onload = () => resolve(fileReader.result);
-    fileReader.onerror = (error) => reject(error);
-  });
-};
-
+// Removed convertToBase64 as we now use image URLs
 export default function App() {
   const [isAdminLoggedIn, setIsAdminLoggedIn] = useState(() => localStorage.getItem("pg_isAdminLoggedIn") === "true");
   const [selectedTicketId, setSelectedTicketId] = useState(() => localStorage.getItem("pg_selectedTicketId") || null);
@@ -159,20 +150,16 @@ export default function App() {
               onBack={() => handleAdminNavigation("edu")}
               onSubmit={async (data) => {
                 try {
-                  let gambarString = "";
-                  if (data.gambar instanceof File) {
-                    gambarString = await convertToBase64(data.gambar);
-                  }
-
                   const payload = {
                     judul: data.judul,
                     kategori_artikel: data.kategori,
-                    gambar: gambarString,
+                    gambar: data.gambar || "",
                     alt_text: data.altText,
                     isi_artikel: data.isi,
                     rangkuman: data.rangkuman
                   };
                   
+                  console.log("PAYLOAD TO CREATE:", payload);
                   await createArticle(payload);
                   alert("Artikel berhasil ditambahkan!");
                   handleAdminNavigation("edu");
@@ -190,22 +177,16 @@ export default function App() {
               onBack={() => handleAdminNavigation("edu-detail")} 
               onSubmit={async (data) => {
                 try {
-                  let gambarString = data.gambar; // Existing value if not updated
-                  if (data.gambar instanceof File) {
-                    gambarString = await convertToBase64(data.gambar);
-                  } else {
-                    gambarString = data.gambarName || data.gambar || "";
-                  }
-
                   const payload = {
                     judul: data.judul,
                     kategori_artikel: data.kategori,
-                    gambar: gambarString,
+                    gambar: data.gambar || "",
                     alt_text: data.altText,
                     isi_artikel: data.isi,
                     rangkuman: data.rangkuman
                   };
                   
+                  console.log("PAYLOAD TO UPDATE:", payload);
                   await updateArticle(adminSelectedArticle.id, payload);
                   alert("Artikel berhasil diubah!");
                   

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { getReportById, getResponses } from "../../services/api";
+import { getReports, getReportById, getResponses, getResponseById } from "../../services/api";
 import TicketCheckingForm from "./TicketCheckingForm";
 import TicketCheckingResult from "./TicketCheckingResult";
 
@@ -16,40 +16,55 @@ export default function TicketCheckingPage() {
     setSearchedTicketId(ticketId);
 
     try {
-      // Extract numeric ID from ticket format (e.g., "PH-20260531-0002" -> "2")
-      let reportId = ticketId;
+      // 1. Fetch semua report untuk menemukan ID database yang sebenarnya dari string tiket ini
+      let reportsRes = await getReports();
+      let allReports = reportsRes.data || reportsRes;
       
-      if (ticketId.includes("-")) {
-        const parts = ticketId.split("-");
-        reportId = Number(parts[parts.length - 1]); // Get the last part (numeric ID)
+      let matchedReport = allReports.find(r => r.ticket === ticketId);
+      if (!matchedReport) {
+        throw new Error("Tidak dapat menemukan tiket. Silakan cek kembali nomor tiket Anda.");
       }
-
-      // Fetch the report
-      let reportRes = await getReportById(reportId);
-      let reportData = reportRes.data || reportRes;
       
-      // Ensure admin_actions is initialized
+      const trueReportId = matchedReport.id; // e.g., 35
+      
+      // Ambil data spesifik report by ID nya
+      let reportRes = await getReportById(trueReportId);
+      let reportData = reportRes.data || reportRes;
       reportData.admin_actions = reportData.admin_actions || [];
 
+      // 2. Cari ID respons untuk report ini
       try {
-        const respRes = await getResponses({ report_id: reportId });
-        const list = respRes.data || respRes;
+        const respListRes = await getResponses({ report_id: trueReportId });
+        const list = respListRes.data || respListRes;
         
         if (list && list.length > 0) {
-          const adminAction = list[0];
-          reportData.admin_actions = [
-            {
-              id: adminAction.id,
-              report_id: adminAction.report_id,
-              hasil_keputusan: adminAction.hasil_keputusan,
-              kategori: adminAction.kategori,
-              catatan: adminAction.catatan,
-              created_by: adminAction.created_by,
-              updated_by: adminAction.updated_by,
-              created_at: adminAction.created_at,
-              updated_at: adminAction.updated_at
+          const responsId = list[0].id; // e.g., 3
+          
+          // "mengecek ticket itu id nya berapa baru dia menjadi params di linknya"
+          // Fetch respons by ID (API /respons/{id})
+          const singleRespRes = await getResponseById(responsId);
+          const adminAction = singleRespRes.data || singleRespRes;
+          
+          if (adminAction && adminAction.id) {
+            // Gunakan data report dari respons jika ada, agar sinkron
+            if (adminAction.report) {
+              reportData = adminAction.report;
             }
-          ];
+            
+            reportData.admin_actions = [
+              {
+                id: adminAction.id,
+                report_id: adminAction.report_id,
+                hasil_keputusan: adminAction.hasil_keputusan,
+                kategori: adminAction.kategori,
+                catatan: adminAction.catatan,
+                created_by: adminAction.created_by,
+                updated_by: adminAction.updated_by,
+                created_at: adminAction.created_at,
+                updated_at: adminAction.updated_at
+              }
+            ];
+          }
         }
       } catch (e) {
          console.warn("Gagal memuat respons admin:", e);

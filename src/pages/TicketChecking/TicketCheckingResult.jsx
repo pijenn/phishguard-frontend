@@ -73,7 +73,6 @@ export default function TicketCheckingResult({ result, error, ticketId, loading,
   const adminActions = result.admin_actions || [];
   const latestAction = adminActions.length > 0 ? adminActions[adminActions.length - 1] : null;
   
-  // Calculate current status
   const currentStatus = getStatus(result);
   const statusConfig = getStatusColor(currentStatus);
 

@@ -23,16 +23,7 @@ export default function ArticleFormPage({
 
   const [judul,      setJudul]      = useState(initialData.judul ?? initialData.title ?? "");
   const [kategori,   setKategori]   = useState(initialData.kategori_artikel ?? initialData.category ?? "");
-  const [gambar,     setGambar]     = useState(null);
-  
-  // Try to extract image name from URL or Base64 if possible, or just use a default
-  const getInitialImageName = () => {
-    const imgStr = initialData.gambar ?? initialData.imageSrc;
-    if (!imgStr) return "";
-    if (imgStr.startsWith("data:image")) return "gambar_saat_ini.png";
-    return imgStr.split("/").pop() || "gambar_saat_ini.png";
-  };
-  const [gambarName, setGambarName] = useState(getInitialImageName());
+  const [gambar,  setGambar]  = useState(initialData.gambar ?? initialData.imageSrc ?? "");
   
   const [altText,    setAltText]    = useState(initialData.alt_text ?? initialData.imageCaption ?? "");
   const [isi,        setIsi]        = useState(initialData.isi_artikel ?? initialData.content ?? "");
@@ -41,23 +32,13 @@ export default function ArticleFormPage({
   const [touched,  setTouched]  = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
 
-  const fileInputRef = useRef(null);
-
   const errors = {
     judul:    touched && judul.trim()    === "",
     kategori: touched && kategori        === "",
-    gambar:   touched && !gambarName,
+    gambar:   touched && gambar.trim() === "",
     isi:      touched && isi.trim()      === "",
   };
   const isValid = !Object.values(errors).some(Boolean);
-
-  const handleFileChange = (e) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      setGambar(file);
-      setGambarName(file.name);
-    }
-  };
 
   const handleSubmit = () => {
     setTouched(true);
@@ -65,7 +46,7 @@ export default function ArticleFormPage({
     const isFormIncomplete = 
       judul.trim() === "" || 
       kategori === "" || 
-      !gambarName || 
+      gambar.trim() === "" || 
       isi.trim() === "";
 
     if (isFormIncomplete) {
@@ -77,7 +58,7 @@ export default function ArticleFormPage({
 
   const handleConfirm = () => {
     setShowConfirm(false);
-    onSubmit?.({ judul, kategori, gambar, gambarName, altText, isi, rangkuman });
+    onSubmit?.({ judul, kategori, gambar, altText, isi, rangkuman });
   };
 
   return (
@@ -136,35 +117,13 @@ export default function ArticleFormPage({
             />
           </FormField>
 
-          <FormField label="Upload Gambar" required>
-            <div
-              onClick={() => fileInputRef.current?.click()}
-              className={`flex h-[38px] items-center gap-2.5 px-4 py-2 relative self-stretch w-full cursor-pointer bg-[rgba(249,249,249,1)] rounded-[5px] border border-solid transition-all duration-200 hover:border-[rgba(111,0,0,1)]
-                ${errors.gambar ? "border-[rgba(255,0,0,1)] ring-1 ring-[rgba(255,0,0,1)]" : "border-[rgba(119,119,119,1)]"}`}
-            >
-              <img 
-                src="img/logo-upload-edukasi.svg" 
-                alt="" 
-                className="w-4 h-4 object-contain flex-shrink-0" 
-              />
-
-              <span className="relative flex items-center flex-1 [font-family:'Helvetica_Neue-Regular',Helvetica] font-normal text-[rgba(111,0,0,1)] text-base tracking-[-0.35px] leading-5 truncate">
-                {gambarName || 'Gambar "Picture Lead" (format JPG/PNG)'}
-              </span>
-
-              {gambarName && (
-                <button
-                  type="button"
-                  onClick={(e) => { e.stopPropagation(); setGambar(null); setGambarName(""); }}
-                  className="flex-shrink-0 text-[rgba(119,119,119,1)] hover:text-[rgba(255,0,0,1)] transition-colors"
-                >
-                  <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
-                    <path d="M1 1L11 11M11 1L1 11" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
-                  </svg>
-                </button>
-              )}
-            </div>
-            <input ref={fileInputRef} type="file" accept=".jpg,.jpeg,.png" className="sr-only" onChange={handleFileChange} />
+          <FormField label="URL Gambar" required>
+            <Input
+              value={gambar}
+              onChange={(e) => setGambar(e.target.value)}
+              placeholder="Masukkan URL gambar (misal: https://example.com/image.jpg)"
+              className={errors.gambar ? "border-[rgba(255,0,0,1)] ring-1 ring-[rgba(255,0,0,1)]" : ""}
+            />
           </FormField>
 
           <FormField label="Alt text gambar">
@@ -204,7 +163,7 @@ export default function ArticleFormPage({
 
       {showConfirm && (
         <ArticleConfirmPopup
-          data={{ judul, kategori, gambarName, altText, isi, rangkuman }}
+          data={{ judul, kategori, gambar, altText, isi, rangkuman }}
           isEdit={isEdit}
           onEdit={() => setShowConfirm(false)}
           onConfirm={handleConfirm}

@@ -1,6 +1,5 @@
 const BASE_URL = "https://adorable-tranquility-production-f56c.up.railway.app/api";
 
-// ================= TOKEN MANAGEMENT =================
 const TOKEN_KEY = "phishguard_token";
 const USER_KEY = "phishguard_user";
 
@@ -39,6 +38,7 @@ const fetchApi = async (endpoint, options = {}) => {
   const token = getToken();
   const headers = {
     'Content-Type': 'application/json',
+    'Accept': 'application/json',
     ...options.headers,
   };
   
@@ -105,7 +105,6 @@ export const deleteArticle = async (id) => {
   });
 };
 
-// ================= REPORT =================
 export const submitReport = async (data) => {
   return fetchApi(`/report`, {
     method: 'POST',
