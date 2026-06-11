@@ -133,13 +133,13 @@ export default function TicketCheckingResult({ result, error, ticketId, loading,
           </p>
         </div>
 
-        {/* Risk Score Card */}
+        {/* Analisis URL Card */}
         <div className="flex flex-col gap-2 p-4 sm:p-5 bg-white rounded-[15px] border border-[rgba(200,200,200,1)]">
           <p className="[font-family:'Helvetica_Neue-Regular',Helvetica] font-normal text-[rgba(26,28,28,0.7)] text-xs sm:text-sm">
-            Risk Score
+            Analisis URL
           </p>
-          <p className="[font-family:'Helvetica_Neue-Bold',Helvetica] font-bold text-[rgba(111,0,0,1)] text-lg sm:text-xl">
-            {riskScore}%
+          <p className={`[font-family:'Helvetica_Neue-Bold',Helvetica] font-bold text-lg sm:text-xl ${isPhishing ? "text-red-600" : "text-green-600"}`}>
+            {isPhishing ? "[BUKAN LINK CIMB]" : "[LINK CIMB]"}
           </p>
         </div>
       </div>

@@ -139,14 +139,28 @@ export default function DashboardPage() {
         <img className="absolute bottom-0 right-0 w-[303px] h-[113px]" src="img/polygon-2-dashboard.svg" alt="" aria-hidden="true" />
       </header>
 
-      <StatCards stats={stats} />
+      {loading ? (
+        <div className="flex flex-col items-center justify-center py-20 gap-4 w-full">
+          <svg className="animate-spin h-10 w-10 text-[#1c1c1c]" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+          </svg>
+          <span className="[font-family:'Helvetica_Neue-Regular',Helvetica] text-lg text-[#9b9b9b]">
+            Memuat Dashboard...
+          </span>
+        </div>
+      ) : (
+        <>
+          <StatCards stats={stats} />
 
-      <section className="flex items-start gap-4 relative self-stretch w-full flex-[0_0_auto]" aria-label="Dashboard charts">
-        <LineChart data={weeklyTrend} />
-        <DonutChart data={topChannel} />
-      </section>
+          <section className="flex flex-col sm:flex-row items-start gap-4 relative self-stretch w-full flex-[0_0_auto]" aria-label="Dashboard charts">
+            <LineChart data={weeklyTrend} />
+            <DonutChart data={topChannel} />
+          </section>
 
-      <LatestTicketsTable reports={reports} />
+          <LatestTicketsTable reports={reports} />
+        </>
+      )}
     </>
   );
 }

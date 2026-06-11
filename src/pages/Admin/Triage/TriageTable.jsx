@@ -129,6 +129,14 @@ function applyFilters(tickets, filters) {
     result.sort((a, b) => a.status.localeCompare(b.status));
   }
 
+  if (filters.status && filters.status !== "All") {
+    result = result.filter((t) => t.status === filters.status);
+  }
+
+  if (filters.channel && filters.channel !== "All") {
+    result = result.filter((t) => t.channel.toLowerCase() === filters.channel.toLowerCase());
+  }
+
   return result;
 }
 
@@ -137,9 +145,8 @@ const COLUMNS = [
   { key: "status",   label: "Status",       className: "w-[16%] min-w-0 text-left" },
   { key: "channel",  label: "Channel Chat", className: "w-[15%] min-w-0 text-left" },
   { key: "risk",     label: "Risk",         className: "w-[10%] min-w-0 text-center" },
-  { key: "priority", label: "Priority",     className: "w-[14%] min-w-0 text-left" },
+  { key: "priority", label: "Priority",     className: "w-[19%] min-w-0 text-left" },
   { key: "dibuat",   label: "Dibuat",       className: "w-[20%] min-w-0 text-right pr-4" },
-  { key: "action",   label: "",             className: "w-[5%] min-w-0 text-center" }, // Kolom Panah
 ];
 
 export default function TriageTable({ reports = [], filters, onViewTicket, loading }) {
@@ -200,7 +207,21 @@ export default function TriageTable({ reports = [], filters, onViewTicket, loadi
         </thead>
 
         <tbody>
-          {tickets.length === 0 ? (
+          {loading ? (
+            <tr>
+              <td colSpan={COLUMNS.length} className="py-12 text-center">
+                <div className="flex flex-col items-center justify-center gap-3">
+                  <svg className="animate-spin h-8 w-8 text-[#1c1c1c]" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                  </svg>
+                  <span className="[font-family:'Helvetica_Neue-Regular',Helvetica] text-base text-[#9b9b9b]">
+                    Memuat data...
+                  </span>
+                </div>
+              </td>
+            </tr>
+          ) : tickets.length === 0 ? (
             <tr>
               <td colSpan={COLUMNS.length} className="py-12 text-center">
                 <span className="[font-family:'Helvetica_Neue-Regular',Helvetica] text-base text-[#9b9b9b]">
@@ -212,7 +233,10 @@ export default function TriageTable({ reports = [], filters, onViewTicket, loadi
             tickets.map((ticket, idx) => (
               <tr
                 key={ticket.id}
-                className={`transition-colors duration-150 hover:bg-[rgba(252,245,233,0.6)] ${idx % 2 === 0 ? "" : "bg-[rgba(252,245,233,0.25)]"}`}
+                onClick={() => onViewTicket && onViewTicket(ticket.originalReport)}
+                className={`transition-colors duration-150 ${
+                  onViewTicket ? "cursor-pointer hover:bg-[rgba(252,245,233,0.8)]" : "hover:bg-[rgba(252,245,233,0.6)]"
+                } ${idx % 2 === 0 ? "" : "bg-[rgba(252,245,233,0.25)]"}`}
               >
                 <td className="py-3 pr-4 align-middle">
                   <span className="[font-family:'Helvetica_Neue-Regular',Helvetica] text-sm text-[rgba(26,28,28,1)] tracking-[-0.2px] leading-normal break-all">
@@ -251,16 +275,6 @@ export default function TriageTable({ reports = [], filters, onViewTicket, loadi
                   <span className="[font-family:'Helvetica_Neue-Regular',Helvetica] text-sm text-[rgba(26,28,28,1)] leading-normal whitespace-nowrap">
                     {ticket.dibuat}
                   </span>
-                </td>
-
-                <td className="py-3 align-middle text-center">
-                  <button
-                    onClick={() => onViewTicket && onViewTicket(ticket.originalReport)}
-                    className="p-2 inline-flex items-center justify-center hover:opacity-60 hover:scale-110 transition-all cursor-pointer bg-transparent border-none"
-                    aria-label={`Lihat tiket ${ticket.id}`}
-                  >
-                    <ArrowIcon />
-                  </button>
                 </td>
               </tr>
             ))

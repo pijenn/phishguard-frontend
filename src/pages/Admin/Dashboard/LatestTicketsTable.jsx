@@ -50,8 +50,7 @@ const COLUMNS = [
   { key: "channel",  label: "Channel",      className: "text-left w-[15%]" },
   { key: "risk",     label: "Risk Score",   className: "text-center w-[15%]" },
   { key: "priority", label: "Priority",     className: "text-left w-[15%]" },
-  { key: "dibuat",   label: "Date",         className: "text-right w-[15%]" },
-  { key: "action",   label: "",             className: "text-center w-[10%]" },
+  { key: "dibuat",   label: "Date",         className: "text-right w-[25%]" },
 ];
 
 export default function LatestTicketsTable({ reports = [] }) {
@@ -170,16 +169,6 @@ export default function LatestTicketsTable({ reports = [] }) {
                       <span className="[font-family:'Helvetica_Neue-Regular',Helvetica] text-sm text-[rgba(26,28,28,1)] leading-normal whitespace-nowrap">
                         {ticket.dibuat}
                       </span>
-                    </td>
-
-                    <td className="py-3 align-middle text-center">
-                      <a
-                        href="#"
-                        className="p-2 inline-flex items-center justify-center hover:opacity-60 hover:scale-110 transition-all cursor-pointer bg-transparent border-none focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#FF0000]"
-                        aria-label={`View ticket ${ticket.id}`}
-                      >
-                        <ArrowIcon />
-                      </a>
                     </td>
                   </tr>
                 ))

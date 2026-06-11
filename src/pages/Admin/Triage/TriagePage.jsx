@@ -8,9 +8,11 @@ export default function TriagePage() {
   const [reports, setReports] = useState([]);
   const [loading, setLoading] = useState(true);
   const [filters, setFilters] = useState({
-    sort: "Default",
+    sort: "Terbaru",
     hideSelesai: false,
     query: "",
+    status: "All",
+    channel: "All",
   });
   const [selectedTicket, setSelectedTicket] = useState(null);
 

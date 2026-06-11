@@ -41,7 +41,7 @@ const IconCheckbox = ({ checked }) => (
   </svg>
 );
 
-const SORT_OPTIONS = ["Default", "Terbaru", "Terlama", "Status A-Z"];
+const SORT_OPTIONS = ["Terbaru", "Terlama"];
 
 export default function TriageFilterBar({ filters, setFilters }) {
   const [sortOpen, setSortOpen] = useState(false);
@@ -63,24 +63,14 @@ export default function TriageFilterBar({ filters, setFilters }) {
   };
 
   return (
-    <div className="flex items-center gap-0 relative self-stretch w-full flex-[0_0_auto] rounded-[10px] overflow-hidden border border-[#d0d0d0] bg-white shadow-[0px_4px_4px_#00000020]">
-
-      <button
-        className="flex items-center justify-center px-4 py-[10px] text-[#1c1c1c] hover:bg-[#f5f5f5] transition-colors flex-shrink-0 border-r border-[#d0d0d0] h-full"
-        title="Filter"
-        aria-label="Filter"
-      >
-        <IconFilter />
-      </button>
-
+    <div className="flex items-center gap-0 relative self-stretch w-full flex-[0_0_auto] rounded-[10px] overflow-visible border border-[#d0d0d0] bg-white shadow-[0px_4px_4px_#00000020]">
       <div className="relative flex-shrink-0 border-r border-[#d0d0d0]">
         <button
-          className="flex items-center justify-center px-3 py-[10px] text-[#1c1c1c] hover:bg-[#f5f5f5] transition-colors h-full"
-          title="Urutkan"
-          aria-label="Urutkan"
           onClick={() => setSortOpen(!sortOpen)}
+          className="flex items-center gap-2 px-4 py-[10px] text-sm font-normal text-[#1c1c1c] hover:bg-[#f5f5f5] transition-colors whitespace-nowrap"
         >
-          <IconSort />
+          {filters.sort}
+          <IconChevronDown />
         </button>
         {sortOpen && (
           <div className="absolute top-full left-0 mt-1 w-36 bg-white border border-[#d0d0d0] rounded-[10px] shadow-[0px_4px_12px_#00000030] z-20 overflow-hidden">
@@ -97,16 +87,6 @@ export default function TriageFilterBar({ filters, setFilters }) {
             ))}
           </div>
         )}
-      </div>
-
-      <div className="relative flex-shrink-0 border-r border-[#d0d0d0]">
-        <button
-          onClick={() => setSortOpen(!sortOpen)}
-          className="flex items-center gap-2 px-4 py-[10px] text-sm font-normal text-[#1c1c1c] hover:bg-[#f5f5f5] transition-colors whitespace-nowrap"
-        >
-          {filters.sort}
-          <IconChevronDown />
-        </button>
       </div>
 
       <button

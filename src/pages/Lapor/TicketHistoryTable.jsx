@@ -15,7 +15,7 @@ const COLUMNS = [
   { key: "status",   label: "Status",       className: "w-[15%] min-w-0 text-left" },
   { key: "channel",  label: "Channel Chat", className: "w-[14%] min-w-0 text-left" },
   { key: "risk",     label: "Risk",         className: "w-[10%] min-w-0 text-center" },
-  { key: "priority", label: "Priority",     className: "w-[14%] min-w-0 text-left" },
+  { key: "priority", label: "Hasil Link",   className: "w-[14%] min-w-0 text-left" },
   { key: "dibuat",   label: "Dibuat",       className: "w-[22%] min-w-0 text-right pr-4" },
   { key: "action",   label: "",             className: "w-[5%] min-w-0 text-center" },
 ];
@@ -84,16 +84,22 @@ export default function TicketHistoryTable({ maxRows = 6, onViewTicket }) {
         
         const data = await response.json();
         const reportsData = Array.isArray(data) ? data : data.data || []
-        const formattedTickets = reportsData.map((item) => ({
-          id: item.id ? `PH-${item.id}` : `PH-${Math.floor(Math.random() * 10000)}`,
-          status: item.status || "Submitted",
-          channel: item.channel_chat || "-",
-          risk: item.risk_score || "-", 
-          priority: item.priority || "-",
-          dibuat: item.created_at 
-            ? new Date(item.created_at).toLocaleDateString("id-ID", { day: 'numeric', month: 'short', year: 'numeric' }) 
-            : "-",
-        }));
+        const formattedTickets = reportsData.map((item) => {
+          const isPhishing = item.ml_result?.label?.toLowerCase() === "phishing";
+          return {
+            id: item.ticket || (item.id ? `PH-${item.id}` : `PH-${Math.floor(Math.random() * 10000)}`),
+            status: item.status || "Submitted",
+            channel: item.channel_chat || "-",
+            risk: item.risk_score || (item.ml_result ? item.ml_result.risk_score : "-"),
+            isPhishing: isPhishing,
+            dibuat: item.created_at 
+              ? new Date(item.created_at).toLocaleDateString("id-ID", { day: 'numeric', month: 'short', year: 'numeric' }) 
+              : "-",
+            created_at: item.created_at
+          };
+        });
+
+        formattedTickets.sort((a, b) => new Date(b.created_at || 0) - new Date(a.created_at || 0));
 
         setTickets(formattedTickets);
       } catch (error) {
@@ -194,8 +200,8 @@ export default function TicketHistoryTable({ maxRows = 6, onViewTicket }) {
                   </td>
 
                 <td className="py-3 pr-4 align-middle">
-                    <span className="[font-family:'Helvetica_Neue-Regular',Helvetica] text-sm text-[rgba(26,28,28,1)] leading-normal">
-                      {ticket.priority}
+                    <span className={`[font-family:'Helvetica_Neue-Bold',Helvetica] font-bold text-sm leading-normal ${ticket.isPhishing ? "text-red-600" : "text-green-600"}`}>
+                      {ticket.isPhishing ? "[BUKAN LINK CIMB]" : "[LINK CIMB]"}
                     </span>
                   </td>
 
