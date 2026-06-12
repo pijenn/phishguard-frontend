@@ -65,6 +65,7 @@ const ArrowIcon = () => (
 );
 
 const API_URL = "https://adorable-tranquility-production-f56c.up.railway.app/api/report";
+const RESPONSES_URL = "https://adorable-tranquility-production-f56c.up.railway.app/api/respons";
 
 export default function TicketHistoryTable({ maxRows = 6, onViewTicket }) {
   const ROW_HEIGHT  = 52;
@@ -78,17 +79,44 @@ export default function TicketHistoryTable({ maxRows = 6, onViewTicket }) {
     const fetchReports = async () => {
       setIsLoading(true);
       try {
-        const response = await fetch(API_URL);
+        const [reportResponse, responsResponse] = await Promise.all([
+          fetch(API_URL),
+          fetch(RESPONSES_URL)
+        ]);
         
-        if (!response.ok) throw new Error("Gagal memuat data dari server");
+        if (!reportResponse.ok) throw new Error("Gagal memuat data dari server");
         
-        const data = await response.json();
-        const reportsData = Array.isArray(data) ? data : data.data || []
+        const data = await reportResponse.json();
+        const responsData = responsResponse.ok ? await responsResponse.json() : [];
+        
+        let reportsData = Array.isArray(data) ? data : data.data || [];
+        const actualResponses = Array.isArray(responsData) ? responsData : responsData.data || [];
+
+        reportsData = reportsData.map(report => {
+          const reportResponses = actualResponses.filter(res => res.report_id === report.id);
+          reportResponses.sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
+          return {
+            ...report,
+            admin_actions: reportResponses
+          };
+        });
+
+        const getStatus = (report) => {
+          if (!report.admin_actions || report.admin_actions.length === 0) return "Submitted";
+          const lastAction = report.admin_actions[report.admin_actions.length - 1];
+          const isClosed = 
+            lastAction.hasil_keputusan === "Confirm Valid Phishing" || 
+            lastAction.hasil_keputusan === "False Positive" || 
+            lastAction.selesaikanTiket || 
+            lastAction.selesaikan_tiket;
+          return isClosed ? "Closed" : "In review";
+        };
+
         const formattedTickets = reportsData.map((item) => {
           const isPhishing = item.ml_result?.label?.toLowerCase() === "phishing";
           return {
             id: item.ticket || (item.id ? `PH-${item.id}` : `PH-${Math.floor(Math.random() * 10000)}`),
-            status: item.status || "Submitted",
+            status: item.status || getStatus(item),
             channel: item.channel_chat || "-",
             risk: item.risk_score || (item.ml_result ? item.ml_result.risk_score : "-"),
             isPhishing: isPhishing,
@@ -125,10 +153,10 @@ export default function TicketHistoryTable({ maxRows = 6, onViewTicket }) {
         </div>
 
         <div
-          className="w-full overflow-y-auto"
+          className="w-full overflow-y-auto overflow-x-auto"
           style={{ maxHeight: `${maxHeight}px` }}
         >
-          <table className="w-full border-collapse table-fixed">
+          <table className="w-full border-collapse table-fixed min-w-[800px]">
             <colgroup>
               {COLUMNS.map((col) => (
                 <col key={col.key} className={col.className} />
